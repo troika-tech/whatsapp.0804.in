@@ -23,9 +23,11 @@ import {
   FaBrain,
   FaPhoneAlt,
   FaMagic,
-  FaTelegram,
+  FaFacebook,
   FaInstagram,
-  FaLinkedin
+  FaLinkedin,
+  FaEnvelope,
+  FaYoutube
 } from "react-icons/fa";
 
 const SidebarContainer = styled.div`
@@ -295,10 +297,11 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const navigationItems = [
-    { id: 'ai-agent', label: 'AI Agent', icon: FaBrain, color: '#10a37f' },
-    { id: 'ai-calling-agent', label: 'AI Calling Agent', icon: FaPhoneAlt, color: '#3b82f6' }
-  ];
+  // COMMENTED OUT: Navigation items for AI Agent and AI Calling Agent
+  // const navigationItems = [
+  //   { id: 'ai-agent', label: 'AI Agent', icon: FaBrain, color: '#10a37f' },
+  //   { id: 'ai-calling-agent', label: 'AI Calling Agent', icon: FaPhoneAlt, color: '#3b82f6' }
+  // ];
 
   const handlePageChange = (routeId) => {
 
@@ -364,12 +367,13 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
               className=""
             >
               <NavIcon><FaMagic   /></NavIcon>
-              <NavText>Ask Me Anything</NavText>
+              <NavText>New Conversation</NavText>
             </NavItem>
           </Section>
 
-          <Section>
-            <SectionTitle $isDarkMode={isDarkMode}>Services</SectionTitle>
+          {/* COMMENTED OUT: Proceed Further section for AI Agent and AI Calling Agent - now empty */}
+          {/* <Section>
+            <SectionTitle $isDarkMode={isDarkMode}>Proceed Further</SectionTitle>
             {navigationItems.map((item) => {
               const IconComponent = item.icon;
               return (
@@ -386,10 +390,36 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
                 </NavItem>
               );
             })}
-          </Section>
+          </Section> */}
 
           <Section>
-            <SectionTitle $isDarkMode={isDarkMode}>Contact</SectionTitle>
+            <SectionTitle $isDarkMode={isDarkMode}>Proceed Further</SectionTitle>
+            <NavItem
+              as="a"
+              href="mailto:info@troikatech.in"
+              $isDarkMode={isDarkMode}
+              className="nav-item"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              <NavIcon style={{ color: '#3b82f6' }}>
+                <FaEnvelope />
+              </NavIcon>
+              <NavText>Send an Email</NavText>
+            </NavItem>
+            <NavItem
+              as="a"
+              href="https://api.whatsapp.com/send?phone=919897433544"
+              target="_blank"
+              rel="noopener noreferrer"
+              $isDarkMode={isDarkMode}
+              className="nav-item"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              <NavIcon style={{ color: '#25d366' }}>
+                <FaWhatsapp />
+              </NavIcon>
+              <NavText>Connect on WhatsApp</NavText>
+            </NavItem>
             <NavItem
               $isDarkMode={isDarkMode}
               onClick={() => handlePageChange('get-quote')}
@@ -427,26 +457,26 @@ const Sidebar = ({ isOpen, onClose, onSocialMediaClick, onTabNavigation }) => {
         {/* Social Media Icons */}
         <SocialIconsContainer $isDarkMode={isDarkMode}>
           <SocialIcon
-            href="https://api.whatsapp.com/send?phone=919897433544"
+            href="https://www.youtube.com/@TroikaTech"
             target="_blank"
             rel="noopener noreferrer"
             $isDarkMode={isDarkMode}
-            $defaultColor="#25d366"
-            $hoverColor="#25d366"
-            title="WhatsApp"
+            $defaultColor="#FF0000"
+            $hoverColor="#FF0000"
+            title="YouTube"
           >
-            <FaWhatsapp />
+            <FaYoutube />
           </SocialIcon>
           <SocialIcon
-            href="https://t.me/your-telegram"
+            href="https://www.facebook.com/troikatechservices/"
             target="_blank"
             rel="noopener noreferrer"
             $isDarkMode={isDarkMode}
-            $defaultColor="#0088cc"
-            $hoverColor="#0088cc"
-            title="Telegram"
+            $defaultColor="#1877f2"
+            $hoverColor="#1877f2"
+            title="Facebook"
           >
-            <FaTelegram />
+            <FaFacebook />
           </SocialIcon>
           <SocialIcon
             href="https://www.instagram.com/troikatechindia/"
