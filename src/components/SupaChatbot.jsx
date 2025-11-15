@@ -3570,19 +3570,72 @@ AI Website is built for instant replies, 24×7.<br>
       return;
     }
     
-    // Fallback for other actions
+    // Fallback for other actions - directly send the message
     const suggestionMessages = {
       'services': 'What services does Troika Tech offer?',
       'pricing': 'What is the pricing for AI services?',
       'demo': 'Can I get a demo?',
       'support': 'What kind of support do you provide?'
     };
-    
-    const message = suggestionMessages[action] || 'Tell me more about this';
-    setTimeout(() => {
-      handleSendMessage(message);
+
+    const messageText = suggestionMessages[action] || action;
+
+    // Send message directly without using the input field
+    setTimeout(async () => {
+      if (!sessionId) return;
+
+      const textToSend = messageText;
+      if (!textToSend.trim()) return;
+
+      // Stop any currently playing audio
+      stopAudio();
+
+      // Small delay to ensure audio is fully stopped
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      // Add user message directly
+      const userMessage = {
+        sender: "user",
+        text: textToSend,
+        timestamp: new Date()
+      };
+      addMessageToTab(currentTab, userMessage);
+
+      // Track which tab this message was sent from
+      setMessageOriginTab(currentTab);
+
+      // Increment user message count
+      incrementUserMessageCount();
+
+      // Set typing indicator
+      setIsTyping(true);
+
+      // Send to backend
+      try {
+        if (!apiBase) {
+          throw new Error('API Base URL is not defined');
+        }
+
+        const messageId = `streaming-${Date.now()}`;
+        setCurrentStreamingMessageId(messageId);
+
+        // Get current user data
+        const currentName = userName || localStorage.getItem('chatbot_user_name') || null;
+        const currentPhone = userPhone || localStorage.getItem('chatbot_user_phone') || null;
+
+        await sendStreamingMessage(textToSend, {
+          name: currentName,
+          phone: currentPhone,
+          email: null
+        });
+      } catch (error) {
+        console.error('Error sending message:', error);
+        setCurrentStreamingMessageId(null);
+        setIsTyping(false);
+        toast.error('Failed to send message. Please try again.');
+      }
     }, 50);
-  }, [handleSendMessage]);
+  }, [sessionId, addMessageToTab, getCurrentTab, incrementUserMessageCount, setIsTyping, stopAudio, apiBase, sendStreamingMessage, userName, userPhone, setMessageOriginTab, setCurrentStreamingMessageId]);
 
   // Handler for suggestion buttons from bot responses
   const handleBotSuggestionClick = useCallback((suggestion) => {

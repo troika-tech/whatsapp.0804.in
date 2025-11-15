@@ -928,7 +928,14 @@ const InputArea = ({
   const shouldDisable = isTyping || (showInlineAuth && !verified);
 
   const handleQuestionClick = (question) => {
+    // Set the message in the input
     setMessage(question);
+    // Send the message immediately
+    setTimeout(() => {
+      if (handleSendMessage) {
+        handleSendMessage(question);
+      }
+    }, 50);
   };
 
   const handleAutoSuggestionClick = (suggestion) => {
