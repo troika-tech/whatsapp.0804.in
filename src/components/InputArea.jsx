@@ -919,13 +919,17 @@ const InputArea = ({
   currentlyPlaying,
   isWelcomeMode = false,
   showInlineAuth = false,
+  showInlineAuthInput = false,
+  authPhoneState = false,
+  authOtpState = false,
   shouldShowAuth = false,
   activePage
 }) => {
   const { isDarkMode } = useTheme();
   const [showSuggestions, setShowSuggestions] = useState(false);
-  // Disable input when typing OR when authentication is required
-  const shouldDisable = isTyping || (showInlineAuth && !verified);
+  // Disable input when typing OR when authentication is required but not actively collecting
+  // Allow input when actively asking for phone (authPhoneState) or OTP (authOtpState)
+  const shouldDisable = isTyping || (showInlineAuth && !verified && !authPhoneState && !authOtpState);
 
   const handleQuestionClick = (question) => {
     // Set the message in the input
@@ -959,8 +963,16 @@ const InputArea = ({
         <ChatInput
           $isDarkMode={isDarkMode}
           value={message}
+          type={authPhoneState && !verified ? "tel" : "text"}
+          inputMode={authPhoneState && !verified ? "numeric" : "text"}
+          pattern={authPhoneState && !verified ? "[0-9]*" : undefined}
           onChange={(e) => {
-            const newValue = e.target.value;
+            let newValue = e.target.value;
+            // Restrict to numbers only when asking for phone number
+            if (authPhoneState && !verified) {
+              // Only allow digits, spaces, +, and - (for phone number formats)
+              newValue = newValue.replace(/[^\d\+\-\s]/g, '');
+            }
             setMessage(newValue);
             // Suggestions disabled
             // if (newValue.trim().length > 0) {
@@ -969,12 +981,31 @@ const InputArea = ({
             //   setShowSuggestions(false);
             // }
           }}
-          onKeyDown={handleKeyPress}
+          onKeyDown={(e) => {
+            // Block non-numeric keys when asking for phone number (except backspace, delete, arrow keys, etc.)
+            if (authPhoneState && !verified) {
+              const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Enter'];
+              const isNumber = /^\d$/.test(e.key);
+              const isAllowedKey = allowedKeys.includes(e.key);
+              const isModifier = e.ctrlKey || e.metaKey || e.altKey;
+              
+              // Allow numbers, allowed keys, and modifier combinations (for copy/paste)
+              if (!isNumber && !isAllowedKey && !isModifier && !e.shiftKey) {
+                e.preventDefault();
+                return;
+              }
+            }
+            handleKeyPress(e);
+          }}
           onFocus={() => setShowSuggestions(false)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           placeholder={
             isTyping
               ? "Thinking..."
+              : (showInlineAuth && !verified && showInlineAuthInput && authOtpState)
+                ? "Enter 6-digit OTP..."
+              : (showInlineAuth && !verified && showInlineAuthInput)
+                ? "Type your mobile number..."
               : (showInlineAuth && !verified)
                 ? "Please verify to continue..."
                 : "Ask me anything..."
