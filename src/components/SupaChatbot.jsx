@@ -253,21 +253,22 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
         chatbotId
       });
       
-      if (currentUserCount >= 3 && !verified && !phonePromptSentRef.current) {
-        console.log('✅ Triggering phone prompt');
-        phonePromptSentRef.current = true;
-        setTimeout(() => {
-          const phonePrompt = {
-            sender: "bot",
-            text: "To continue chat, please type your whatsapp number.",
-            timestamp: new Date()
-          };
-          addMessageToTab(targetTab, phonePrompt);
-          // Enable input field for typing
-          setShowInlineAuthInput(true);
-          setAuthPhoneState(true);
-        }, 500);
-      }
+      // COMMENTED OUT: Phone prompt after 3 messages - allow users to chat without auth
+      // if (currentUserCount >= 3 && !verified && !phonePromptSentRef.current) {
+      //   console.log('✅ Triggering phone prompt');
+      //   phonePromptSentRef.current = true;
+      //   setTimeout(() => {
+      //     const phonePrompt = {
+      //       sender: "bot",
+      //       text: "To continue chat, please type your whatsapp number.",
+      //       timestamp: new Date()
+      //     };
+      //     addMessageToTab(targetTab, phonePrompt);
+      //     // Enable input field for typing
+      //     setShowInlineAuthInput(true);
+      //     setAuthPhoneState(true);
+      //   }, 500);
+      // }
 
       // ===== SMART USER COLLECTION: Ask for phone after 3rd message =====
       // COMMENTED OUT: User collection flow disabled
@@ -486,11 +487,11 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
   // Handle navigation between tabs (not refresh)
   const handleTabNavigation = useCallback((tabId) => {
 
-    // Block navigation if authentication is required
-    if (showInlineAuth && !verified) {
-      toast.warning('Please complete authentication before navigating to other pages');
-      return;
-    }
+    // COMMENTED OUT: Block navigation if authentication is required - allow free navigation
+    // if (showInlineAuth && !verified) {
+    //   toast.warning('Please complete authentication before navigating to other pages');
+    //   return;
+    // }
 
     setIsPageRefresh(false); // This is navigation, not refresh
     sessionStorage.setItem('hasNavigated', 'true'); // Mark as navigation
@@ -525,11 +526,11 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     // Special handling for "new-chat" - clear all history and go to home
     if (tabId === 'new-chat') {
 
-      // If user is in the middle of authentication, prevent new chat action
-      if (showInlineAuth && (showInlineAuthInput || showOtpInput)) {
-        toast.warning('Please complete authentication before starting a new chat');
-        return;
-      }
+      // COMMENTED OUT: Prevent new chat if in middle of authentication - allow free new chat
+      // if (showInlineAuth && (showInlineAuthInput || showOtpInput)) {
+      //   toast.warning('Please complete authentication before starting a new chat');
+      //   return;
+      // }
 
       // Stop any ongoing audio/TTS immediately
       stopAudio();
@@ -814,17 +815,18 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
           cfg.require_auth_text || "Verify yourself to continue chat"
         );
 
-        if (cfg.require_auth_from_start) {
-          setNeedsAuth(true);
-          setShowInlineAuth(true);
-          setShowAuthScreen(false);
-        }
+        // COMMENTED OUT: Authentication requirements - allow users to chat without auth
+        // if (cfg.require_auth_from_start) {
+        //   setNeedsAuth(true);
+        //   setShowInlineAuth(true);
+        //   setShowAuthScreen(false);
+        // }
 
-        if (cfg.immediate_auth_required || cfg.require_auth) {
-          setNeedsAuth(true);
-          setShowInlineAuth(true);
-          setShowAuthScreen(false);
-        }
+        // if (cfg.immediate_auth_required || cfg.require_auth) {
+        //   setNeedsAuth(true);
+        //   setShowInlineAuth(true);
+        //   setShowAuthScreen(false);
+        // }
 
         // Check for existing session using the new authentication system
         // The useAuthentication hook already handles session validation on mount
@@ -946,21 +948,21 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
     }
   }, [sessionId, chatbotId]);
 
-  // Check if user needs auth based on message count when component mounts or verified state changes
-  useEffect(() => {
-    
-    if (userMessageCount >= 3 && !verified && !authPhoneState && !authOtpState) {
-      setNeedsAuth(true);
-      setShowInlineAuth(true);
-      // Ask for phone number in chat after bot responds (after 3rd message)
-      setAuthPhoneState(true);
-    } else if (verified) {
-      setNeedsAuth(false);
-      setShowInlineAuth(false);
-      setAuthPhoneState(false);
-      setAuthOtpState(false);
-    }
-  }, [userMessageCount, verified, authPhoneState, authOtpState]);
+  // COMMENTED OUT: Authentication check based on message count - allow users to chat without auth
+  // useEffect(() => {
+  //   
+  //   if (userMessageCount >= 3 && !verified && !authPhoneState && !authOtpState) {
+  //     setNeedsAuth(true);
+  //     setShowInlineAuth(true);
+  //     // Ask for phone number in chat after bot responds (after 3rd message)
+  //     setAuthPhoneState(true);
+  //   } else if (verified) {
+  //     setNeedsAuth(false);
+  //     setShowInlineAuth(false);
+  //     setAuthPhoneState(false);
+  //     setAuthOtpState(false);
+  //   }
+  // }, [userMessageCount, verified, authPhoneState, authOtpState]);
 
   // Reset phone prompt ref when verified or authPhoneState changes
   useEffect(() => {
@@ -1863,146 +1865,148 @@ const SupaChatbotInner = ({ chatbotId, apiBase }) => {
       const textToSend = inputText || message;
       if (!textToSend.trim()) return;
 
-      // ===== AUTHENTICATION FLOW IN CHAT =====
+      // COMMENTED OUT: AUTHENTICATION FLOW IN CHAT - allow users to chat without auth
+      // const currentTab = getCurrentTab();
+
+      // // Handle phone number input for authentication
+      // if (authPhoneState && !verified) {
+      //   // Check if input contains only numbers and valid phone characters
+      //   const hasOnlyNumbers = /^[\d\+\-\s]+$/.test(textToSend.trim());
+      //   
+      //   if (!hasOnlyNumbers) {
+      //     // User typed text instead of numbers - show error without adding their message
+      //     setMessage("");
+      //     setTimeout(() => {
+      //       const errorMessage = {
+      //         sender: "bot",
+      //         text: "Type Your 10 digit whatsapp number",
+      //         timestamp: new Date()
+      //       };
+      //       addMessageToTab(currentTab, errorMessage);
+      //     }, 300);
+      //     
+      //     return;
+      //   }
+      //   
+      //   const phoneResult = extractAndValidatePhone(textToSend);
+      //   
+      //   if (phoneResult.valid) {
+      //     // Found valid phone number - send OTP
+      //     const userMessage = { sender: "user", text: textToSend, timestamp: new Date() };
+      //     addMessageToTab(currentTab, userMessage);
+      //     setMessage("");
+      //     
+      //     // Send OTP in background
+      //     handleSendOtpNew(phoneResult.phone).then(() => {
+      //       // After OTP is sent, ask for OTP in chat
+      //       setAuthPhoneState(false);
+      //       setAuthOtpState(true);
+      //       setTimeout(() => {
+      //         const otpPrompt = {
+      //           sender: "bot",
+      //           text: "I've sent an OTP to your whatsapp number. Please enter the 6-digit OTP code.",
+      //           timestamp: new Date()
+      //         };
+      //         addMessageToTab(currentTab, otpPrompt);
+      //       }, 500);
+      //     }).catch(() => {
+      //       // Error handled in handleSendOtpNew
+      //     });
+      //     
+      //     return;
+      //   } else {
+      //     // Invalid phone number - show error message
+      //     const userMessage = { sender: "user", text: textToSend, timestamp: new Date() };
+      //     addMessageToTab(currentTab, userMessage);
+      //     setMessage("");
+      //     
+      //     setTimeout(() => {
+      //       const errorMessage = {
+      //         sender: "bot",
+      //         text: "Type Your 10 digit whatsapp number",
+      //         timestamp: new Date()
+      //       };
+      //       addMessageToTab(currentTab, errorMessage);
+      //     }, 500);
+      //     
+      //     return;
+      //   }
+      // }
+
+      // // Handle OTP input for authentication
+      // if (authOtpState && !verified) {
+      //   // Check if message is a 6-digit OTP
+      //   const otpMatch = textToSend.trim().match(/^\d{6}$/);
+      //   
+      //   if (otpMatch) {
+      //     const otpCode = otpMatch[0];
+      //     const userMessage = { sender: "user", text: textToSend, timestamp: new Date() };
+      //     addMessageToTab(currentTab, userMessage);
+      //     setMessage("");
+      //     
+      //     // Verify OTP in background
+      //     handleVerifyOtpNew(otpCode).then(() => {
+      //       // Authentication successful
+      //       setAuthOtpState(false);
+      //       setTimeout(() => {
+      //         const successMessage = {
+      //           sender: "bot",
+      //           text: "Great! You're verified. How can I help you?",
+      //           timestamp: new Date()
+      //         };
+      //         addMessageToTab(currentTab, successMessage);
+      //       }, 500);
+      //     }).catch((error) => {
+      //       // OTP verification failed - keep authOtpState true so user can try again
+      //       // Don't reset authOtpState - let user retry
+      //       setTimeout(() => {
+      //         const errorMessage = {
+      //           sender: "bot",
+      //           text: "Invalid OTP. Please enter the correct 6-digit OTP code.",
+      //           timestamp: new Date()
+      //         };
+      //         addMessageToTab(currentTab, errorMessage);
+      //       }, 500);
+      //     });
+      //     
+      //     return;
+      //   } else {
+      //     // Invalid OTP format - show error message
+      //     // Check if input contains only digits (but not 6 digits)
+      //     const hasOnlyDigits = /^\d+$/.test(textToSend.trim());
+      //     
+      //     if (hasOnlyDigits) {
+      //       // User entered digits but not 6 digits
+      //       const userMessage = { sender: "user", text: textToSend, timestamp: new Date() };
+      //       addMessageToTab(currentTab, userMessage);
+      //       setMessage("");
+      //       
+      //       setTimeout(() => {
+      //         const errorMessage = {
+      //           sender: "bot",
+      //           text: "Please enter a 6-digit OTP code.",
+      //           timestamp: new Date()
+      //         };
+      //         addMessageToTab(currentTab, errorMessage);
+      //       }, 500);
+      //     } else {
+      //       // User entered non-numeric input
+      //       setMessage("");
+      //       setTimeout(() => {
+      //         const errorMessage = {
+      //           sender: "bot",
+      //           text: "Please enter a 6-digit OTP code (numbers only).",
+      //           timestamp: new Date()
+      //         };
+      //         addMessageToTab(currentTab, errorMessage);
+      //       }, 300);
+      //     }
+      //     
+      //     return;
+      //   }
+      // }
+
       const currentTab = getCurrentTab();
-
-      // Handle phone number input for authentication
-      if (authPhoneState && !verified) {
-        // Check if input contains only numbers and valid phone characters
-        const hasOnlyNumbers = /^[\d\+\-\s]+$/.test(textToSend.trim());
-        
-        if (!hasOnlyNumbers) {
-          // User typed text instead of numbers - show error without adding their message
-          setMessage("");
-          setTimeout(() => {
-            const errorMessage = {
-              sender: "bot",
-              text: "Type Your 10 digit whatsapp number",
-              timestamp: new Date()
-            };
-            addMessageToTab(currentTab, errorMessage);
-          }, 300);
-          
-          return;
-        }
-        
-        const phoneResult = extractAndValidatePhone(textToSend);
-        
-        if (phoneResult.valid) {
-          // Found valid phone number - send OTP
-          const userMessage = { sender: "user", text: textToSend, timestamp: new Date() };
-          addMessageToTab(currentTab, userMessage);
-          setMessage("");
-          
-          // Send OTP in background
-          handleSendOtpNew(phoneResult.phone).then(() => {
-            // After OTP is sent, ask for OTP in chat
-            setAuthPhoneState(false);
-            setAuthOtpState(true);
-            setTimeout(() => {
-              const otpPrompt = {
-                sender: "bot",
-                text: "I've sent an OTP to your whatsapp number. Please enter the 6-digit OTP code.",
-                timestamp: new Date()
-              };
-              addMessageToTab(currentTab, otpPrompt);
-            }, 500);
-          }).catch(() => {
-            // Error handled in handleSendOtpNew
-          });
-          
-          return;
-        } else {
-          // Invalid phone number - show error message
-          const userMessage = { sender: "user", text: textToSend, timestamp: new Date() };
-          addMessageToTab(currentTab, userMessage);
-          setMessage("");
-          
-          setTimeout(() => {
-            const errorMessage = {
-              sender: "bot",
-              text: "Type Your 10 digit whatsapp number",
-              timestamp: new Date()
-            };
-            addMessageToTab(currentTab, errorMessage);
-          }, 500);
-          
-          return;
-        }
-      }
-
-      // Handle OTP input for authentication
-      if (authOtpState && !verified) {
-        // Check if message is a 6-digit OTP
-        const otpMatch = textToSend.trim().match(/^\d{6}$/);
-        
-        if (otpMatch) {
-          const otpCode = otpMatch[0];
-          const userMessage = { sender: "user", text: textToSend, timestamp: new Date() };
-          addMessageToTab(currentTab, userMessage);
-          setMessage("");
-          
-          // Verify OTP in background
-          handleVerifyOtpNew(otpCode).then(() => {
-            // Authentication successful
-            setAuthOtpState(false);
-            setTimeout(() => {
-              const successMessage = {
-                sender: "bot",
-                text: "Great! You're verified. How can I help you?",
-                timestamp: new Date()
-              };
-              addMessageToTab(currentTab, successMessage);
-            }, 500);
-          }).catch((error) => {
-            // OTP verification failed - keep authOtpState true so user can try again
-            // Don't reset authOtpState - let user retry
-            setTimeout(() => {
-              const errorMessage = {
-                sender: "bot",
-                text: "Invalid OTP. Please enter the correct 6-digit OTP code.",
-                timestamp: new Date()
-              };
-              addMessageToTab(currentTab, errorMessage);
-            }, 500);
-          });
-          
-          return;
-        } else {
-          // Invalid OTP format - show error message
-          // Check if input contains only digits (but not 6 digits)
-          const hasOnlyDigits = /^\d+$/.test(textToSend.trim());
-          
-          if (hasOnlyDigits) {
-            // User entered digits but not 6 digits
-            const userMessage = { sender: "user", text: textToSend, timestamp: new Date() };
-            addMessageToTab(currentTab, userMessage);
-            setMessage("");
-            
-            setTimeout(() => {
-              const errorMessage = {
-                sender: "bot",
-                text: "Please enter a 6-digit OTP code.",
-                timestamp: new Date()
-              };
-              addMessageToTab(currentTab, errorMessage);
-            }, 500);
-          } else {
-            // User entered non-numeric input
-            setMessage("");
-            setTimeout(() => {
-              const errorMessage = {
-                sender: "bot",
-                text: "Please enter a 6-digit OTP code (numbers only).",
-                timestamp: new Date()
-              };
-              addMessageToTab(currentTab, errorMessage);
-            }, 300);
-          }
-          
-          return;
-        }
-      }
 
       // ===== USER COLLECTION FLOW =====
       // COMMENTED OUT: User collection flow disabled (name and phone collection)
