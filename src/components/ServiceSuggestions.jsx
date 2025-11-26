@@ -109,22 +109,25 @@ const ServiceSuggestions = ({ onQuestionClick, isWelcomeMode, activePage }) => {
   // Get questions for the current page, default to home questions
   const questions = questionsByPage[activePage] || questionsByPage['home'];
 
-  return (
-    <Container>
-      <QuestionsContainer>
-        {questions.map((question, index) => (
-          <QuestionButton
-            key={index}
-            $isDarkMode={isDarkMode}
-            onClick={() => onQuestionClick(question)}
-          >
-            <FiMessageCircle />
-            {question}
-          </QuestionButton>
-        ))}
-      </QuestionsContainer>
-    </Container>
-  );
+  // COMMENTED OUT: Suggested questions buttons
+  // return (
+  //   <Container>
+  //     <QuestionsContainer>
+  //       {questions.map((question, index) => (
+  //         <QuestionButton
+  //           key={index}
+  //           $isDarkMode={isDarkMode}
+  //           onClick={() => onQuestionClick(question)}
+  //         >
+  //           <FiMessageCircle />
+  //           {question}
+  //         </QuestionButton>
+  //       ))}
+  //     </QuestionsContainer>
+  //   </Container>
+  // );
+
+  return null;
 };
 
 export default ServiceSuggestions;
