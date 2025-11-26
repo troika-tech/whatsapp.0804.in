@@ -81,7 +81,7 @@ const QuestionButton = styled.button`
 
 const questionsByPage = {
   'home': [
-    'What is WhatsApp Marketing?',
+    'What are the lastest offers?',
     'What are the charges?',
     'Can I see the demo?',
     'Is it a WhatsApp API?'
